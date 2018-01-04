@@ -1,0 +1,40 @@
+apply plugin: "com.benjaminsproule.swagger"
+
+swagger {
+    for (String api : "${swaggerApis}".split(',')) {
+        apiSource {
+            springmvc = true
+            locations = ["com.example.controller." + api + "Controller"]
+            schemes = ['http', 'https']
+            host = 'www.example.com:8080'
+            basePath = '/api'
+            info {
+                title = "Documentation for ${api} API"
+                version = 'v1'
+
+                termsOfService = 'http://www.example.com/termsOfService'
+                contact {
+                    email = 'email@email.com'
+                    name = 'Name'
+                    url = 'http://www.example.com'
+                }
+                license {
+                    url = 'http://www.apache.org/licenses/LICENSE-2.0.html'
+                    name = 'Apache 2.0'
+                }
+            }
+            outputFormats = 'json,yaml'
+            templatePath = "${project.rootDir}/src/main/resources/api-templates/strapdown.html.hbs"
+            outputPath = "${swaggerRootDir}/${api}/${api}-document-dev.html"
+            swaggerDirectory = "${swaggerRootDir}/${api}"
+            swaggerFileName = "${api}-doc-swagger"
+            //swaggerApiReader = 'com.github.kongchen.swagger.docgen.reader.SwaggerReader'
+            //swaggerApiReader = 'com.github.kongchen.swagger.docgen.reader.SpringMvcApiReader'
+            //attachSwaggerArtifact = true
+        }
+    }
+}
+
+jar {
+    dependsOn generateSwaggerDocumentation
+}

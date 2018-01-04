@@ -1,0 +1,33 @@
+#debug: true
+
+management:
+  context-path: /service
+  security:
+    enabled: false
+  health:
+    db:
+      enabled: true
+
+spring:
+  application:
+    name: demo-service
+
+server:
+  port: 8888
+#  contextPath: /springfox
+security:
+  ignored: /**
+
+
+documentation:
+  baseurl: http://localhost
+  swagger:
+    services:
+      -
+        name: Service1
+        url: ${documentation.baseurl}:8888/v2/api-docs?group=customer-api
+        version: 2.0
+      -
+        name: Service2
+        url: ${documentation.baseurl}:8888/v2/api-docs?group=spring-service-group
+        version: 2.0

@@ -1,0 +1,90 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    baseName = "${artifactId}"
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task zipSwaggerSpecCustomer(type: Zip, dependsOn: [ 'test', 'generateSwaggerDocumentation']){
+        from "${swaggerRootDir}/Customer/"
+        include '*'
+        include '*/**' //to include contents of a folder present inside
+        archiveName "Customer-spec.zip"
+        destinationDir(file("${buildDir}/libs"))
+}
+task zipSwaggerSpecOrder(type: Zip, dependsOn: [ 'test', 'generateSwaggerDocumentation']){
+    from "${swaggerRootDir}/Order/"
+    include '*'
+    include '*/**' //to include contents of a folder present inside
+    archiveName "Order-spec.zip"
+    destinationDir(file("${buildDir}/libs"))
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+/**
+ * Script that includes this one must have a task with name `sourcesJar` and `implJar` extended from `Jar` task
+ */
+
+publishing {
+    publications {
+        api(MavenPublication) {
+            groupId "${groupId}"
+            artifactId "${artifactId}"
+            version "${version}"
+
+            from components.java
+        }
+
+        src(MavenPublication) {
+            groupId "${groupId}"
+            artifactId "${artifactId}"
+            version "${version}"
+
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+        }
+
+        swaggerCustomer(MavenPublication) {
+            groupId "${groupId}"
+            artifactId "${artifactId}"
+            version "${version}"
+
+            artifact zipSwaggerSpecCustomer {
+                classifier "Customer-doc"
+                extension "${swaggerArtifactExt}"
+            }
+        }
+        swaggerOrder(MavenPublication) {
+            groupId "${groupId}"
+            artifactId "${artifactId}"
+            version "${version}"
+
+            artifact zipSwaggerSpecOrder {
+                classifier "Order-doc"
+                extension "${swaggerArtifactExt}"
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            if (project.version.endsWith('-SNAPSHOT')) {
+                url "${nexusUrl}/content/repositories/snapshots"
+            } else {
+                url "${nexusUrl}/content/repositories/releases"
+            }
+            credentials {
+                username nexusUsername
+                password nexusPassword
+            }
+        }
+    }
+}
