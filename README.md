@@ -1,4 +1,6 @@
-To generate Swagger spec (contracts) directly from the code and annotations run next gradlew task `./gradlew clean generateSwaggerDocumentation`
+This project demonstrates how to generate Swagger Spec (contracts) directly from the code base.
+
+To generate Swagger Spec run next gradle task `./gradlew clean generateSwaggerDocumentation`
 
 Swagger-UI  : http://localhost:9999/swagger-ui.html
 
